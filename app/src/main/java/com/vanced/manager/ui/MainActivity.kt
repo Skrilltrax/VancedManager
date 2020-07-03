@@ -24,8 +24,9 @@ import com.vanced.manager.utils.ThemeHelper.setFinalTheme
 
 class MainActivity : Main() {
 
-    private var isParent = true
     private lateinit var binding: ActivityMainBinding
+    private val navHost by lazy { findNavController(R.id.bottom_nav_host) }
+    private val localBroadcastManager by lazy { LocalBroadcastManager.getInstance(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setFinalTheme(this)
@@ -34,25 +35,19 @@ class MainActivity : Main() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
 
-        val toolbar: MaterialToolbar = findViewById(R.id.home_toolbar)
-        setSupportActionBar(toolbar)
-
-        val navHost = findNavController(R.id.bottom_nav_host)
-        val appBarConfiguration = AppBarConfiguration(navHost.graph)
-        toolbar.setupWithNavController(navHost, appBarConfiguration)
-
-        navHost.addOnDestinationChangedListener{_, currFrag: NavDestination, _ ->
-            isParent = when (currFrag.id) {
-                R.id.home_fragment -> true
-                else -> false
-            }
-
-            setDisplayHomeAsUpEnabled(!isParent)
-
+        with(binding) {
+            setSupportActionBar(homeToolbar)
+            homeToolbar.setupWithNavController(navHost, AppBarConfiguration(navHost.graph))
         }
 
-        registerReceivers()
-
+        navHost.addOnDestinationChangedListener { _, currFrag: NavDestination, _ ->
+            setDisplayHomeAsUpEnabled(
+                when (currFrag.id) {
+                    R.id.home_fragment -> true
+                    else -> false
+                }
+            )
+        }
     }
 
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -75,8 +70,8 @@ class MainActivity : Main() {
     }
 
     override fun onPause() {
+        localBroadcastManager.unregisterReceiver(broadcastReceiver)
         super.onPause()
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
     }
 
     override fun onResume() {
@@ -86,7 +81,6 @@ class MainActivity : Main() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val navHost = findNavController(R.id.bottom_nav_host)
         when (item.itemId) {
             android.R.id.home -> {
                 onBackPressed()
@@ -100,7 +94,7 @@ class MainActivity : Main() {
                 navHost.navigate(R.id.action_settingsFragment)
                 return true
             }
-            R.id.dev_settings -> { 
+            R.id.dev_settings -> {
                 navHost.navigate(R.id.toDevSettingsFragment)
                 return true
             }
@@ -123,8 +117,7 @@ class MainActivity : Main() {
         intentFilter.addAction(INSTALL_FAILED)
         intentFilter.addAction(APP_UNINSTALLED)
         intentFilter.addAction(APP_NOT_UNINSTALLED)
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, intentFilter)
-
+        localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter)
     }
 
     fun restartActivity() {
