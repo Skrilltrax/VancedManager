@@ -1,4 +1,4 @@
-package com.vanced.manager.model
+package com.vanced.manager.network.model
 import android.os.Parcelable
 
 import kotlinx.android.parcel.Parcelize
@@ -12,9 +12,7 @@ import com.squareup.moshi.Json
 @Parcelize
 @Keep
 @JsonClass(generateAdapter = true)
-data class MicroGResponse(
-    @Json(name = "changelog") val changelog: String,
-    @Json(name = "url") val url: String,
+data class VancedResponse(
     @Json(name = "version") val version: String,
     @Json(name = "versionCode") val versionCode: Int
 ) : Parcelable

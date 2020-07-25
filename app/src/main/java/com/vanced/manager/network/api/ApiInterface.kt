@@ -1,8 +1,8 @@
-package com.vanced.manager.core.api
+package com.vanced.manager.network.api
 
-import com.vanced.manager.model.MicroGResponse
-import com.vanced.manager.model.VancedManagerResponse
-import com.vanced.manager.model.VancedResponse
+import com.vanced.manager.network.model.MicroGResponse
+import com.vanced.manager.network.model.VancedManagerResponse
+import com.vanced.manager.network.model.VancedResponse
 import retrofit2.http.GET
 
 interface ApiInterface {

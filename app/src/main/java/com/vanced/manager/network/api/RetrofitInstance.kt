@@ -1,4 +1,4 @@
-package com.vanced.manager.core.api
+package com.vanced.manager.network.api
 
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
